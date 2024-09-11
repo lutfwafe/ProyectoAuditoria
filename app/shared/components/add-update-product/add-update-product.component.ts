@@ -18,8 +18,8 @@ export class AddUpdateProductComponent  implements OnInit {
     id: new FormControl(''),
     image: new FormControl('', [Validators.required]),    
     name: new FormControl('', [Validators.required, Validators.minLength(4)]),
-    soldUnits: new FormControl('', [Validators.required, Validators.min(0)]),
-    auditedUnits: new FormControl('', [Validators.required, Validators.min(0)]),
+    soldUnits: new FormControl(null, [Validators.required, Validators.min(0)]),
+    auditedUnits: new FormControl(null, [Validators.required, Validators.min(0)]),
 
   })
 
@@ -31,6 +31,7 @@ export class AddUpdateProductComponent  implements OnInit {
 
   ngOnInit() {
     this.user = this.utilsSvc.getFromLocalStorage('user'); 
+    if (this.product) this.form.setValue(this.product);
   }
 
 
@@ -48,16 +49,16 @@ export class AddUpdateProductComponent  implements OnInit {
 
   }
 
-  //============== Crear Producto ==============
+  //============== Actualizar Producto ==============
 
-  async createProduct() {
+  async updateProduct() {
 
       let path = `users/${this.user.uid}/products/${this.product.id}`
 
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      // ======= subir la imagen y obtener la url ======
+      // ======= si cambio la imagen, subir la nueva y obtener url ======
       if(this.form.value.image !== this.product.image){
         let dataUrl = this.form.value.image;
         let imagePath = await this.firebaseSvc.getFilePath(this.product.image);
@@ -67,13 +68,13 @@ export class AddUpdateProductComponent  implements OnInit {
 
       delete this.form.value.id
 
-      this.firebaseSvc.addDocument(path, this.form.value).then(async res => {
+      this.firebaseSvc.updateDocument(path, this.form.value).then(async res => {
 
       
         this.utilsSvc.dismissModal({ success: true})
 
         this.utilsSvc.presentToast({
-          message: 'producto creado exitosamente',
+          message: 'producto actualizado correctamente',
           duration: 2500,
           color: 'success',
           position: 'middle',
@@ -96,8 +97,8 @@ export class AddUpdateProductComponent  implements OnInit {
       })
   }
 
-  //========== Actualizar Producto ============
-  async updateProduct() {
+  //========== Crear Producto ============
+  async createProduct() {
 
       let path = `users/${this.user.uid}/products`
 
@@ -140,6 +141,7 @@ export class AddUpdateProductComponent  implements OnInit {
         loading.dismiss();
       })
   }
+  
 
 
 }
