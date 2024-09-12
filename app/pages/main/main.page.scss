@@ -1,0 +1,17 @@
+ion-item{
+    font-size: 14px;
+    color: var(--ion-color-light);
+    --background: var(--ion-color-primary);
+
+    ion-icon {
+        color: var(--ion-color-light);
+    }
+
+    &.active{
+        color: var(--ion-color-warning);
+    
+        ion-icon {
+            color: var(--ion-color-warning);
+        }
+    }
+}
